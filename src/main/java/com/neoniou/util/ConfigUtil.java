@@ -26,8 +26,6 @@ public class ConfigUtil {
 
     public static int scanInternalTime;
 
-    public static String cookie;
-
     /**
      * Read config.properties
      *
@@ -48,8 +46,6 @@ public class ConfigUtil {
             } catch (Exception e) {
                 scanInternalTime = 15;
             }
-
-            cookie = props.getProperty("cookie");
 
             for (String id : props.getProperty(ROOM_ID).split(SPLIT_SYMBOL)) {
                 RoomInfo roomInfo = new RoomInfo();
