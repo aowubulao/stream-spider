@@ -1,6 +1,5 @@
 package com.neoniou.request;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -53,17 +51,15 @@ public class DownloadRequest {
             is = connection.getInputStream();
             fos = new FileOutputStream(fileName);
 
-            log.info("Room[{}] start to download", roomId);
+            log.info("[{}]Room start to download", roomId);
 
-            int byteSum = 0;
             int byteRead;
             byte[] buffer = new byte[1204];
             while ((byteRead = is.read(buffer)) != -1) {
-                byteSum += byteRead;
                 fos.write(buffer, 0, byteRead);
             }
         } catch (Exception e) {
-            log.error("[{}] Download error: ", roomId, e);
+            log.error("[{}]Download error: ", roomId, e);
         } finally {
             try {
                 assert fos != null;
@@ -72,7 +68,7 @@ public class DownloadRequest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            log.info("Room[{}] ends", roomId);
+            log.info("[{}]Room ends", roomId);
         }
     }
 }

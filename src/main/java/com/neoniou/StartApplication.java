@@ -19,15 +19,20 @@ import java.util.concurrent.ExecutorService;
 public class StartApplication {
 
     public static void main(String[] args) {
+        log.info("Program start.");
+
         // Initialization
         List<RoomInfo> roomInfos = ConfigUtil.readConfig();
         ExecutorService threadPool = ThreadUtil.createThreadPool(roomInfos.size());
+        log.info("Load config successfully.");
 
         // Start thread
         for (RoomInfo roomInfo : roomInfos) {
             threadPool.execute(() -> {
                 LiveRequest liveRequest = new LiveRequest();
                 String roomId = roomInfo.getRoomId();
+
+                log.info("[{}]Start monitoring.", roomId);
 
                 while (true) {
                     int status = liveRequest.isLive(roomId);
@@ -41,7 +46,6 @@ public class StartApplication {
                         String liveUrl = liveRequest.getLiveUrl(roomId);
                         DownloadRequest dr = new DownloadRequest();
                         dr.download(liveUrl, roomId);
-                        return;
                     }
                 }
             });
