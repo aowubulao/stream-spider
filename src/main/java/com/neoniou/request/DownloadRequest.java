@@ -54,7 +54,7 @@ public class DownloadRequest {
             log.info("[{}]Room start to download", roomId);
 
             int byteRead;
-            byte[] buffer = new byte[1204];
+            byte[] buffer = new byte[1024];
             while ((byteRead = is.read(buffer)) != -1) {
                 fos.write(buffer, 0, byteRead);
             }
