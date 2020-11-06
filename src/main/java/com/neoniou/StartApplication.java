@@ -36,17 +36,22 @@ public class StartApplication {
 
                 while (true) {
                     int status = liveRequest.isLive(roomId);
+
                     if (status == LiveStatus.NOT_EXIST) {
                         log.error("[{}]Live room is not exist.", roomId);
                         return;
-                    } else if (status == LiveStatus.NOT_ON_LIVE) {
-                        ThreadUtil.sleep(ConfigUtil.scanInternalTime);
-                    } else {
+                    } else if (status == LiveStatus.ON_LIVE) {
                         log.info("[{}]Room is on live.", roomId);
                         String liveUrl = liveRequest.getLiveUrl(roomId);
+                        if (liveUrl == null) {
+                            continue;
+                        }
+
                         DownloadRequest dr = new DownloadRequest();
                         dr.download(liveUrl, roomId);
                     }
+
+                    ThreadUtil.sleep(ConfigUtil.scanInternalTime);
                 }
             });
         }

@@ -4,6 +4,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.neoniou.constant.LiveStatus;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,25 +31,36 @@ public class LiveRequest {
     private static final String ZERO = "0";
 
     public int isLive(String roomId) {
-        String resBody = HttpRequest.get(ROOM_INIT + roomId)
-                .execute()
-                .body();
+        try {
+            log.info("[{}]Scanning room.", roomId);
+            String resBody = HttpRequest.get(ROOM_INIT + roomId)
+                    .execute()
+                    .body();
 
-        JSONObject body = JSONUtil.parseObj(resBody);
-        if (!ZERO.equals(body.get(CODE).toString())) {
-            return 2;
+            JSONObject body = JSONUtil.parseObj(resBody);
+            if (!ZERO.equals(body.get(CODE).toString())) {
+                return LiveStatus.NOT_EXIST;
+            }
+
+            JSONObject data = JSONUtil.parseObj(body.get(DATA));
+            return Integer.parseInt(data.get(LIVE_STATUS).toString());
+        } catch (Exception e) {
+            log.error("[{}]Scanning room error: ", roomId, e);
+            return LiveStatus.NOT_ON_LIVE;
         }
-
-        JSONObject data = JSONUtil.parseObj(body.get(DATA));
-        return Integer.parseInt(data.get(LIVE_STATUS).toString());
     }
 
     public String getLiveUrl(String roomId) {
-        String resBody = HttpRequest.get(PLAY_URL + roomId)
-                .execute()
-                .body();
-        JSONArray urls = JSONUtil.parseArray(JSONUtil.parseObj(JSONUtil.parseObj(resBody).get(DATA)).get(D_URL));
+        try {
+            String resBody = HttpRequest.get(PLAY_URL + roomId)
+                    .execute()
+                    .body();
+            JSONArray urls = JSONUtil.parseArray(JSONUtil.parseObj(JSONUtil.parseObj(resBody).get(DATA)).get(D_URL));
 
-        return JSONUtil.parseObj(urls.get(0)).get(URL).toString();
+            return JSONUtil.parseObj(urls.get(0)).get(URL).toString();
+        } catch (Exception e) {
+            log.error("[{}]Get live url error: ", roomId, e);
+            return null;
+        }
     }
 }
