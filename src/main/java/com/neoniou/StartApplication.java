@@ -35,6 +35,7 @@ public class StartApplication {
                 log.info("[{}]Start monitoring.", roomId);
 
                 while (true) {
+                    // Judge the room is live or not
                     int status = liveRequest.isLive(roomId);
 
                     if (status == LiveStatus.NOT_EXIST) {
@@ -42,13 +43,19 @@ public class StartApplication {
                         return;
                     } else if (status == LiveStatus.ON_LIVE) {
                         log.info("[{}]Room is on live.", roomId);
+
+                        // Get the live url to download
                         String liveUrl = liveRequest.getLiveUrl(roomId);
+                        // Get url error, retry
                         if (liveUrl == null) {
                             continue;
                         }
 
                         DownloadRequest dr = new DownloadRequest();
-                        dr.download(liveUrl, roomId);
+                        // Download error, retry
+                        if (!dr.download(liveUrl, roomId)) {
+                            continue;
+                        }
                     }
 
                     ThreadUtil.sleep(ConfigUtil.scanInternalTime);

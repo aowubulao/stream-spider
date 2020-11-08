@@ -33,7 +33,7 @@ public class DownloadRequest {
                 .toString();
     }
 
-    public void download(String liveUrl, String roomId) {
+    public boolean download(String liveUrl, String roomId) {
         generateFileName(roomId);
 
         InputStream is = null;
@@ -58,8 +58,11 @@ public class DownloadRequest {
             while ((byteRead = is.read(buffer)) != -1) {
                 fos.write(buffer, 0, byteRead);
             }
+
+            return true;
         } catch (Exception e) {
             log.error("[{}]Download error: ", roomId, e);
+            return false;
         } finally {
             try {
                 assert fos != null;
