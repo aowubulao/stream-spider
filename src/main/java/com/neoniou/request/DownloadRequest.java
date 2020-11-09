@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -48,8 +47,8 @@ public class DownloadRequest {
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Connection", "Keep-Alive");
 
-            is = connection.getInputStream();
             fos = new FileOutputStream(fileName);
+            is = connection.getInputStream();
 
             log.info("[{}]Room start to download", roomId);
 
@@ -59,19 +58,15 @@ public class DownloadRequest {
                 fos.write(buffer, 0, byteRead);
             }
 
+            log.info("[{}]Room ends", roomId);
+
+            // 因为一些原因，所以在这里close，而不是在finally中
+            is.close();
+            fos.close();
             return true;
         } catch (Exception e) {
             log.error("[{}]Download error: ", roomId, e);
             return false;
-        } finally {
-            try {
-                assert fos != null;
-                fos.close();
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            log.info("[{}]Room ends", roomId);
         }
     }
 }
