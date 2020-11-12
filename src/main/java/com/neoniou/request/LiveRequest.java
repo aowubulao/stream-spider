@@ -32,7 +32,6 @@ public class LiveRequest {
 
     public int isLive(String roomId) {
         try {
-            log.info("[{}]Scanning room.", roomId);
             String resBody = HttpRequest.get(ROOM_INIT + roomId)
                     .execute()
                     .body();
